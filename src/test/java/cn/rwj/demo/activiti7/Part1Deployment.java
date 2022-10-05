@@ -38,13 +38,14 @@ public class Part1Deployment {
      */
     @Test
     public void initDeploymentBPMN() {
-        String filename = "bpmn/part1_deployment.bpmn20.xml";
+        String filename = "bpmn/part4_task_claim.bpmn20.xml";
         // String pngname="BPMN/Part1_Deployment.png";
         Deployment deployment = repositoryService.createDeployment()
                 .addClasspathResource(filename)
                 //.addClasspathResource(pngname)//图片
-                .name("测试流程部署BPMN文件")
-                .key("p1")
+//                .name("测试流程部署BPMN文件")
+                .name("测试候选人流程task")
+                .key("p4")
                 .deploy();
         System.out.println(deployment.getName());
     }

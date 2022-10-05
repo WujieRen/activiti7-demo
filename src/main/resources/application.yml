@@ -5,7 +5,7 @@ server:
 
 logging:
   level:
-    root: info
+    root: error
 
 spring:
   datasource:
