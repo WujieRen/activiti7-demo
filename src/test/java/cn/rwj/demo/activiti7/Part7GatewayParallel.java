@@ -5,14 +5,10 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.Task;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @Author rwj
@@ -20,7 +16,7 @@ import java.util.Map;
  * @Description 网关
  */
 @SpringBootTest
-public class Part7Gateway {
+public class Part7GatewayParallel {
 
     @Resource
     RepositoryService   repositoryService;
