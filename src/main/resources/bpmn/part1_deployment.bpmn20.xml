@@ -3,7 +3,7 @@
   <process id="part1_deployment_1" name="流程定义名称" isExecutable="true">
     <startEvent id="sid-8f5cecea-ce75-4a22-bc6b-cf64f2d440db"/>
     <endEvent id="sid-55c44b00-df34-4196-ae9e-b880612973c0"/>
-    <userTask id="sid-7e35d24c-25d8-4755-925f-d56160d023ae" name="yuangong"/>
+    <userTask id="sid-7e35d24c-25d8-4755-925f-d56160d023ae" name="yuangong" activiti:assignee="yuangong"/>
     <sequenceFlow id="sid-5a684260-cd69-4950-9424-400566132eb4" sourceRef="sid-8f5cecea-ce75-4a22-bc6b-cf64f2d440db" targetRef="sid-7e35d24c-25d8-4755-925f-d56160d023ae"/>
     <sequenceFlow id="sid-717854eb-c20c-47bc-b3df-670af2f5252a" sourceRef="sid-7e35d24c-25d8-4755-925f-d56160d023ae" targetRef="sid-55c44b00-df34-4196-ae9e-b880612973c0"/>
   </process>

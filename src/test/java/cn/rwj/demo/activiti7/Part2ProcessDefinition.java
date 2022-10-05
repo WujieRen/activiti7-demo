@@ -30,6 +30,7 @@ public class Part2ProcessDefinition {
             System.out.println("Key："+pd.getKey());
             System.out.println("ResourceName："+pd.getResourceName());
             System.out.println("DeploymentId："+pd.getDeploymentId());
+            System.out.println("ProcessDefinitionId："+pd.getId());
             System.out.println("Version："+pd.getVersion());
 
         }
@@ -45,7 +46,7 @@ public class Part2ProcessDefinition {
     @Test
     public void delDefinition(){
 
-        String pdID="4fcb10eb-446f-11ed-b9a6-a036bc09649b";
+        String pdID="d9473c80-4475-11ed-9e60-a036bc09649b";
         repositoryService.deleteDeployment(pdID,true);
         System.out.println("删除流程定义成功");
     }

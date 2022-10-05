@@ -30,6 +30,8 @@ public class Part3ProcessInstance {
      *     5. act_hi_taskinst
      *     TODO: 另外，看有些博客和课程说到 act_ru_identitylink 表也会有变化，我这里没发现有变化，后面用NPMNJS测试了再补充。
      *          我用的 7.1.0.M6 版本和 Acti BPMN Visualizer 插件。
+     *     解决上次提交疑问，我这里提交没有在 act_ru_identitylink 表生成记录是因为我没有给  UserTask 设置 Asignee。
+     *     6. act_ru_identitylink表，从该表中可根据流程实例ID查询 user_id，group_id，type等
      *
      */
     @Test
@@ -37,7 +39,7 @@ public class Part3ProcessInstance {
         //1、获取页面表单填报的内容，请假时间，请假事由，String formData
         //2、formData 写入业务表，返回业务表主键ID==businessKey
         //3、把业务数据与Activiti7流程数据关联
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("part1_deployment","businessKey_p1d1");
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("part1_deployment_1","businessKey_p1d1");
         System.out.println("流程实例ID："+processInstance.getProcessDefinitionId());
 
     }
