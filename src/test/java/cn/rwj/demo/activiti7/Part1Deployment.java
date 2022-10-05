@@ -33,12 +33,13 @@ public class Part1Deployment {
      *      1. act_re_deployment表，部署，每一次部署，新增一条记录
      *      2. act_re_procdef表，流程定义表。每次部署时，如果key不变，则增加版本号，表示是同一个流程；
      *          但是流程定义是可变的，即可以修改流程的内容。如：以前是超过半小时迟到扣钱，现在是弹性上下班。流程内容变了，只要key不变，那就代表是同一个流程。
-     *          这里的key对应表中的key字段，值为BPMN流程的id： <process id="part1_deployment" name="流程定义名称" isExecutable="true">
+     *          这里的key对应表中的key字段，值为BPMN流程文件中的流程id： <process id="part1_deployment" name="流程定义名称" isExecutable="true">
      *      3. act_ge_bytearray表，存储bpmn文件内容
      */
     @Test
     public void initDeploymentBPMN() {
-        String filename = "bpmn/part1_deployment.bpmn20.xml";
+//        String filename = "bpmn/part1_deployment.bpmn20.xml";
+        String filename = "bpmn/Part1Deployment.bpmn";
         // String pngname="BPMN/Part1_Deployment.png";
         Deployment deployment = repositoryService.createDeployment()
                 .addClasspathResource(filename)
