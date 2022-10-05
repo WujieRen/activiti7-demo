@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
-  <process id="part1_deployment" name="流程定义名称" isExecutable="true">
+  <process id="part1_deployment_1" name="流程定义名称" isExecutable="true">
     <startEvent id="sid-8f5cecea-ce75-4a22-bc6b-cf64f2d440db"/>
     <endEvent id="sid-55c44b00-df34-4196-ae9e-b880612973c0"/>
     <userTask id="sid-7e35d24c-25d8-4755-925f-d56160d023ae" name="yuangong"/>
