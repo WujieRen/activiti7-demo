@@ -48,7 +48,7 @@ public class Part3ProcessInstance {
     //获取流程实例列表
     @Test
     public void getProcessInstances(){
-        /*List<ProcessInstance> list = runtimeService.createProcessInstanceQuery().list();
+        List<ProcessInstance> list = runtimeService.createProcessInstanceQuery().list();
         for(ProcessInstance pi : list){
             System.out.println("--------流程实例------");
             System.out.println("ProcessInstanceId："+pi.getProcessInstanceId());
@@ -56,10 +56,10 @@ public class Part3ProcessInstance {
             System.out.println("isEnded"+pi.isEnded());
             System.out.println("isSuspended："+pi.isSuspended());
 
-        }*/
-        List<ProcessInstance> list = runtimeService.createProcessInstanceQuery().processInstanceId("97b1cfe7-4492-11ed-908f-a036bc09649b").list();
+        }
+        /*List<ProcessInstance> list = runtimeService.createProcessInstanceQuery().processInstanceId("97b1cfe7-4492-11ed-908f-a036bc09649b").list();
         ProcessInstance processInstance = list.get(0); //如果记录不存在 IndexOutOfBoundsException: Index: 0, Size: 0
-        System.out.println("isSuspended："+processInstance.isSuspended());
+        System.out.println("isSuspended："+processInstance.isSuspended());*/
     }
 
 
