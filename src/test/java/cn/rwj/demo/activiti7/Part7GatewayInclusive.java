@@ -10,18 +10,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @Author rwj
  * @Date 2022/10/5
- * @Description 排他网关要有执行条件，如果序没有执行条件，会按照绘制连线顺选择第一个执行。
- *                  排他网关用得比较多的场景是：同意走一条路，不同意周另一条路。
- *                  排他网关只会有一条分支被触发，有始无终。
+ * @Description 包含网关需要有触发条件，且有始有终。
+ *                  且只要符合条件的分支都可以被触发。
  */
 @SpringBootTest
-public class Part7GatewayExclusive {
+public class Part7GatewayInclusive {
     @Resource
     RepositoryService repositoryService;
     @Resource
@@ -30,37 +31,36 @@ public class Part7GatewayExclusive {
     @Resource
     private TaskService taskService;
 
-
-
     @Test
     public void initProcessInstance() {
         //部署流程
-        String filename = "bpmn/part7_gateway_exclusive.bpmn20.xml";
+        String filename = "bpmn/part7_gateway_inclusive.bpmn20.xml";
         Deployment deployment = repositoryService.createDeployment()
                 .addClasspathResource(filename)
-                .name("排他网关")
+                .name("包含网关")
                 .key("p7")
                 .deploy();
         System.out.println("deploymentId" + deployment.getId());
+        //启动实例
         ProcessInstance processInstance = runtimeService
-                .startProcessInstanceByKey("part7_gateway_exclusive");
+                .startProcessInstanceByKey("part7_gateway_inclusive");
         System.out.println("流程实例ID："+processInstance.getProcessDefinitionId());
-        // 然后这里可以看到 排他网关的申请任务
+        // 然后这里可以看到 yuangong 发起的包含网关的申请任务——包含网关_yuangong发起申请
         listTasks();
 //        Task[id=cff254e7-44c3-11ed-88de-a036bc09649b, name=排他网关_yuangong请假]
     }
 
     @Test
     public void completeTask() {
-        Task task = taskService.createTaskQuery().taskName("排他网关_yuangong请假").singleResult();
+        Task task = taskService.createTaskQuery().taskName("包含网关_yuangong发起申请").singleResult();
         //完成任务
         Map<String, Object> dayMap = new HashMap<>();
-        dayMap.put("day", 5);
+        dayMap.put("day", 1);       //因为 day < 3 && day < 6 ，所以应该可以看到task生成了 zhuguan 和 lingdao
         taskService.complete(task.getId(), dayMap);
-        listTasks();    //这里可以看到生成了 排他网关_lingdao审核 task
+        listTasks();    //
         //完成剩余任务
-        task = taskService.createTaskQuery().taskName("排他网关_lingdao审核").singleResult();
-        taskService.complete(task.getId());
+        List<Task> taskList = taskService.createTaskQuery().taskNameIn(Arrays.asList("包含网关_zhuguan审核", "包含网关_lingdao审核")).list();
+        taskList.forEach(t -> taskService.complete(t.getId()));
         listTasks();
     }
 

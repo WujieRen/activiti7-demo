@@ -13,7 +13,7 @@ import javax.annotation.Resource;
 /**
  * @Author rwj
  * @Date 2022/10/5
- * @Description 网关
+ * @Description 并行网关，有始有终。
  */
 @SpringBootTest
 public class Part7GatewayParallel {
