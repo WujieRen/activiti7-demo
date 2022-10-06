@@ -44,6 +44,7 @@ public class Part3ProcessInstance {
 //        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("part4_task_claim","businessKey_p4_claim");
 //        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("part6_uel_v2","businessKey_p6_uel");
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("part6_uel_v3","businessKey_p6_uel");
+//        ProcessInstance start = runtimeService.createProcessInstanceBuilder().name("test").processDefinitionKey("part6_uel_v3").businessKey("businessKey_p6_uel").start();
         System.out.println("流程实例ID："+processInstance.getProcessDefinitionId());
     }
 

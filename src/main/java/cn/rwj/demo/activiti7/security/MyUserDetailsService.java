@@ -58,7 +58,7 @@ public class MyUserDetailsService implements UserDetailsService {
         //return new User(username,"$2a$10$YFZDTqyBqwHkV/vTxKrhtuyIQCMD/joeIylCs8wbvXnhOYRgD/kDq", AuthorityUtils.commaSeparatedStringToAuthorityList("admin"));
 
         //-------------------根据自定义用户属性登录-----------------------------
-        User user = userService.lambdaQuery().eq(User::getName, username).one();
+        User user = userService.lambdaQuery().eq(User::getUsername, username).one();
         if (Objects.isNull(user)) throw new UsernameNotFoundException("该用户不存在");
         logger.info("userInfo: {}", user);
         /*List<GrantedAuthority> authority = new ArrayList<>();
