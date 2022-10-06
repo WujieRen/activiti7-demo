@@ -61,18 +61,19 @@ public class MyUserDetailsService implements UserDetailsService {
         User user = userService.lambdaQuery().eq(User::getUsername, username).one();
         if (Objects.isNull(user)) throw new UsernameNotFoundException("该用户不存在");
         logger.info("userInfo: {}", user);
-        /*List<GrantedAuthority> authority = new ArrayList<>();
-        authority.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+//        List<GrantedAuthority> authority = new ArrayList<>();
+//        authority.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        List<GrantedAuthority> authorityList = AuthorityUtils.createAuthorityList(user.getRoles().split(","));
+        authorityList.add(new SimpleGrantedAuthority("ROLE_ACTIVITI_ADMIN"));
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                 authority
-        )*/
-        ;
-        return org.springframework.security.core.userdetails.User
+                authorityList
+        );
+        /*return org.springframework.security.core.userdetails.User
                 .withUsername(username)
                 .password(user.getPassword())
                 .authorities(AuthorityUtils.NO_AUTHORITIES)
-                .build();
+                .build();*/
     }
 }

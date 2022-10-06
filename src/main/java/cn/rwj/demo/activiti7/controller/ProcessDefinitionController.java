@@ -33,9 +33,9 @@ import java.util.zip.ZipInputStream;
 @RequestMapping("/processDefinition")
 public class ProcessDefinitionController {
 
-    //    @Resource
-//    private ProcessRuntime processRuntime;
-//
+    @Resource
+    private ProcessRuntime processRuntime;
+
 //    @Resource
 //    private SecurityUtil securityUtil;
 
@@ -257,19 +257,19 @@ public class ProcessDefinitionController {
 
 
     //删除流程定义
-//    @Transactional
-//    @DeleteMapping(value = "delDefinition")
-//    public AjaxResponse delDefinition(@RequestParam("depID") String depID, @RequestParam("pdID") String pdID) {
-//        try {
-//
-//            //删除数据
-//            repositoryService.deleteDeployment(depID, true);
-//            formDataMapper.DeleteFormData(pdID);
-//            return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.SUCCESS.getCode(),
-//                    "删除成功", null);
-//        } catch (Exception e) {
-//            return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.ERROR.getCode(),
-//                    "删除失败", e.toString());
-//        }
-//    }
+    @Transactional
+    @DeleteMapping(value = "delDefinition")
+    public AjaxResponse delDefinition(@RequestParam("deploymentId") String deploymentId, @RequestParam("processDefId") String processDefId) {
+        try {
+
+            //删除数据
+            repositoryService.deleteDeployment(deploymentId, true);
+            formDataMapper.DeleteFormData(processDefId);
+            return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.SUCCESS.getCode(),
+                    "删除成功", null);
+        } catch (Exception e) {
+            return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.ERROR.getCode(),
+                    "删除失败", e.toString());
+        }
+    }
 }

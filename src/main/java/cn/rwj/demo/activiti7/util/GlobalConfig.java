@@ -4,7 +4,7 @@ public class GlobalConfig {
     /**
      * 测试场景
      */
-    public static final Boolean Test = false;
+    public static final Boolean Test = true;
 
     //windows路径
     public static final String BPMN_PathMapping = "E:\\activiti7-demo\\src\\main\\resources\\bpmn-upload";
