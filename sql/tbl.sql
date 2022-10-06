@@ -21,3 +21,16 @@ INSERT INTO `user` VALUES ('1', 'admincn', 'beijing', 'admin', '$2a$10$8ZuuTOgr.
 INSERT INTO `user` VALUES ('2', 'ygcn', 'shanghang', 'yuangong', '$2a$10$8ZuuTOgr.wYM7kcbgdIT1eeYD9ZUTd3qJFM6CKvwieDlrQO5K7qIC', 'ROLE_ACTIVITI_USER,GROUP_activitiTeam,g_bajiewukong');
 INSERT INTO `user` VALUES ('3', 'zgcn', 'beijing', 'zhuguan', '$2a$10$8ZuuTOgr.wYM7kcbgdIT1eeYD9ZUTd3qJFM6CKvwieDlrQO5K7qIC', 'ROLE_ACTIVITI_USER,GROUP_activitiTeam');
 INSERT INTO `user` VALUES ('4', 'ldcn', 'beijing', 'lingdao', '$2a$10$8ZuuTOgr.wYM7kcbgdIT1eeYD9ZUTd3qJFM6CKvwieDlrQO5K7qIC', 'ROLE_ACTIVITI_USER,GROUP_activitiTeam');
+
+
+-- ----------------------------
+-- 动态表单数据存储
+-- ----------------------------
+DROP TABLE IF EXISTS `formdata`;
+CREATE TABLE `formdata` (
+                            `PROC_DEF_ID_` varchar(64) DEFAULT NULL,
+                            `PROC_INST_ID_` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+                            `FORM_KEY_` varchar(255) DEFAULT NULL,
+                            `Control_ID_` varchar(100) DEFAULT NULL,
+                            `Control_VALUE_` varchar(2000) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
