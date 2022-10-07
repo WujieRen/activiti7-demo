@@ -110,13 +110,14 @@ public class TaskController {
      * @param taskId
      */
     @GetMapping(value = "/testGetForm")
-    public void formDataShow(@RequestParam("taskId") String taskId) {
+    public void testGetForm(@RequestParam("taskId") String taskId) {
         if (GlobalConfig.Test) {
             securityUtil.logInAs("yuangong");
         }
         Task task = taskRuntime.task(taskId);
         UserTask userTask = (UserTask) repositoryService.getBpmnModel(task.getProcessDefinitionId())
-                .getFlowElement(task.getFormKey());
+//                .getFlowElement(task.getFormKey());   //这样获取要求 formKey的值必须 = <userTask id="sid-d421394f-5be5-478d-b4e1-94fc526e8762">Id的值
+                .getFlowElement(task.getTaskDefinitionKey());    //这里建议直接用taskDefinitoinKey去获取 FormProperties不用formKey去获取
         List<FormProperty> formProperties = userTask.getFormProperties();
         formProperties.forEach(i -> {
             System.out.println("Form property ID:  "  + i.getId());

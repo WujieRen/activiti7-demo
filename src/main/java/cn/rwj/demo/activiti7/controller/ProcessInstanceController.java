@@ -88,6 +88,7 @@ public class ProcessInstanceController {
             org.activiti.engine.runtime.ProcessInstance processInstance = runtimeService
                     .createProcessInstanceBuilder()
                     .processDefinitionKey(processDefinitionKey)
+                    .businessKey("业务字段")
                     .name(instanceName)
                     .variable("content", instanceVariable)
                     .start();
