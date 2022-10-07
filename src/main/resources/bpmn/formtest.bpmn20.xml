@@ -10,7 +10,6 @@
           <activiti:value id="Property value 3"/>
           <activiti:value id="Property value 4"/>
         </activiti:formProperty>
-        <activiti:formProperty id="Property 2"/>
       </extensionElements>
     </userTask>
     <sequenceFlow id="sid-e1fc8cae-b902-4221-9a75-c5e243e54fa0" sourceRef="sid-7cfc20e6-5a2f-4c12-ba7b-701b2d525787" targetRef="sid-d421394f-5be5-478d-b4e1-94fc526e8762"/>

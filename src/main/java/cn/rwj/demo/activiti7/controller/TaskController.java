@@ -275,5 +275,90 @@ public class TaskController {
         }
     }
 
+    /**
+     * 7.1.0.M4 版本无法获取表单，所以自定义了一些规则，用以下方式获取表单数据并返回给前端，
+     * 现在使用的 7.4.0 版本可以获取到表单数据，所以该方法无用
+     * @param taskID
+     * @return
+     */
+    @GetMapping(value = "oldFormDataShow")
+    public AjaxResponse oldFormDataShow(@RequestParam("taskID") String taskID) {
+        try {
+            if (GlobalConfig.Test) {
+                securityUtil.logInAs("yuangong");
+            }
+            Task task = taskRuntime.task(taskID);
+
+//-----------------------构建表单控件历史数据字典------------------------------------------------
+            //本实例所有保存的表单数据HashMap，为了快速读取控件以前环节存储的值
+            HashMap<String, String> controlistMap = new HashMap<>();
+            //本实例所有保存的表单数据
+            List<HashMap<String, Object>> tempControlList = formDataService.getBaseMapper().selectFormDataByProcessInstanceId(task.getProcessInstanceId());
+            for (HashMap ls : tempControlList) {
+                //String Control_ID = ls.get("Control_ID_").toString();
+                //String Control_VALUE = ls.get("Control_VALUE_").toString();
+                controlistMap.put(ls.get("Control_ID_").toString(), ls.get("Control_VALUE_").toString());
+            }
+            //String controlistMapValue = controlistMap.get("控件ID");
+            //controlistMap.containsKey()
+
+            //
+
+/*  ------------------------------------------------------------------------------
+            FormProperty_0ueitp2-_!类型-_!名称-_!默认值-_!是否参数
+            例子：
+            FormProperty_0lovri0-_!string-_!姓名-_!请输入姓名-_!f
+            FormProperty_1iu6onu-_!int-_!年龄-_!请输入年龄-_!s
+
+            默认值：无、字符常量、FormProperty_开头定义过的控件ID
+            是否参数：f为不是参数，s是字符，t是时间(不需要int，因为这里int等价于string)
+            注：类型是可以获取到的，但是为了统一配置原则，都配置到
+            */
+
+            //注意!!!!!!!!:表单Key必须要任务编号一模一样，因为参数需要任务key，但是无法获取，只能获取表单key“task.getFormKey()”当做任务key
+            UserTask userTask = (UserTask) repositoryService.getBpmnModel(task.getProcessDefinitionId())
+                    .getFlowElement(task.getFormKey());
+
+            if (userTask == null) {
+                return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.SUCCESS.getCode(),
+                        GlobalConfig.ResponseCode.SUCCESS.getDesc(), "无表单");
+            }
+            List<FormProperty> formProperties = userTask.getFormProperties();
+            List<HashMap<String, Object>> listMap = new ArrayList<HashMap<String, Object>>();
+            for (FormProperty fp : formProperties) {
+                String[] splitFP = fp.getId().split("-_!");
+
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("id", splitFP[0]);
+                hashMap.put("controlType", splitFP[1]);
+                hashMap.put("controlLable", splitFP[2]);
+
+
+                //默认值如果是表单控件ID
+                if (splitFP[3].startsWith("FormProperty_")) {
+                    //控件ID存在
+                    if (controlistMap.containsKey(splitFP[3])) {
+                        hashMap.put("controlDefValue", controlistMap.get(splitFP[3]));
+                    } else {
+                        //控件ID不存在
+                        hashMap.put("controlDefValue", "读取失败，检查" + splitFP[0] + "配置");
+                    }
+                } else {
+                    //默认值如果不是表单控件ID则写入默认值
+                    hashMap.put("controlDefValue", splitFP[3]);
+                }
+
+
+                hashMap.put("controlIsParam", splitFP[4]);
+                listMap.add(hashMap);
+            }
+
+            return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.SUCCESS.getCode(),
+                    GlobalConfig.ResponseCode.SUCCESS.getDesc(), listMap);
+        } catch (Exception e) {
+            return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.ERROR.getCode(),
+                    "失败", e.toString());
+        }
+    }
 
 }
