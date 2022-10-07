@@ -1,9 +1,13 @@
 package cn.rwj.demo.activiti7.controller;
 
 import cn.rwj.demo.activiti7.mapper.FormDataMapper;
+import cn.rwj.demo.activiti7.model.FormData;
 import cn.rwj.demo.activiti7.secuexam.SecurityUtil;
+import cn.rwj.demo.activiti7.service.FormDataService;
 import cn.rwj.demo.activiti7.util.AjaxResponse;
 import cn.rwj.demo.activiti7.util.GlobalConfig;
+import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.process.runtime.ProcessRuntime;
 import org.activiti.api.runtime.shared.query.Page;
@@ -16,6 +20,7 @@ import org.activiti.bpmn.model.FormValue;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.RepositoryService;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author rwj
@@ -39,7 +45,7 @@ public class TaskController {
     @Resource
     private ProcessRuntime processRuntime;
     @Resource
-    private FormDataMapper formDataMapper;
+    private FormDataService formDataService;
     @Resource
     private RepositoryService repositoryService;
 
@@ -107,9 +113,10 @@ public class TaskController {
 
     /**
      * 经测试， Activity 7.4.0 可以取到表单的所有属性和值
+     *
      * @param taskId
      */
-    @GetMapping(value = "/testGetForm")
+    @GetMapping(value = "testGetForm")
     public void testGetForm(@RequestParam("taskId") String taskId) {
         if (GlobalConfig.Test) {
             securityUtil.logInAs("yuangong");
@@ -120,16 +127,153 @@ public class TaskController {
                 .getFlowElement(task.getTaskDefinitionKey());    //这里建议直接用taskDefinitoinKey去获取 FormProperties不用formKey去获取
         List<FormProperty> formProperties = userTask.getFormProperties();
         formProperties.forEach(i -> {
-            System.out.println("Form property ID:  "  + i.getId());
-            System.out.println("Property name:  "  + i.getName());
-            System.out.println("type:  "  + i.getType());
-            System.out.println("variable:  "  + i.getVariable());
-            System.out.println("Default value:  "  + i.getDefaultExpression());
-            System.out.println("Expression:  "  + i.getExpression());
+            System.out.println("Form property ID:  " + i.getId());
+            System.out.println("Property name:  " + i.getName());
+            System.out.println("type:  " + i.getType());
+            System.out.println("variable:  " + i.getVariable());
+            System.out.println("Default value:  " + i.getDefaultExpression());
+            System.out.println("Expression:  " + i.getExpression());
             List<FormValue> formValues = i.getFormValues();
             formValues.forEach(f -> {
                 System.out.println("Form property value -> Value ID: " + f.getId());
             });
         });
     }
+
+    //保存表单
+    @PostMapping(value = "oldFormDataSave")
+    public AjaxResponse oldFormDataSave(@RequestParam("taskId") String taskId,
+                                        @RequestParam("formData") String formData) {
+        try {
+            if (GlobalConfig.Test) {
+                securityUtil.logInAs("zhuguan");
+            }
+
+            Task task = taskRuntime.task(taskId);
+
+            //formData:控件id-_!控件值-_!是否参数!_!控件id-_!控件值-_!是否参数
+            //FormProperty_0lovri0-_!不是参数-_!f!_!FormProperty_1iu6onu-_!数字参数-_!s
+
+
+            HashMap<String, Object> variables = new HashMap<String, Object>();
+            Boolean hasVariables = false;//没有任何参数
+
+
+            List<HashMap<String, Object>> listMap = new ArrayList<>();
+
+            //前端传来的字符串，拆分成每个控件
+            String[] formDataList = formData.split("!_!");//
+            for (String controlItem : formDataList) {
+                String[] formDataItem = controlItem.split("-_!");
+
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("PROC_DEF_ID_", task.getProcessDefinitionId());
+                hashMap.put("PROC_INST_ID_", task.getProcessInstanceId());
+                hashMap.put("FORM_KEY_", task.getFormKey());
+                hashMap.put("Control_ID_", formDataItem[0]);
+                hashMap.put("Control_VALUE_", formDataItem[1]);
+                listMap.add(hashMap);
+
+                //构建参数集合
+                switch (formDataItem[2]) {
+                    case "f":
+                        System.out.println("控件值不作为参数");
+                        break;
+                    case "s":
+                        variables.put(formDataItem[0], formDataItem[1]);
+                        hasVariables = true;
+                        break;
+                    case "t":
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                        variables.put(formDataItem[0], timeFormat.parse(formDataItem[2]));
+                        hasVariables = true;
+                        break;
+                    case "b":
+                        variables.put(formDataItem[0], BooleanUtils.toBoolean(formDataItem[2]));
+                        hasVariables = true;
+                        break;
+                    default:
+                        System.out.println("控件参数类型配置错误：" + formDataItem[0] + "的参数类型不存在，" + formDataItem[2]);
+                }
+            }//for结束
+
+            if (hasVariables) {
+                //带参数完成任务
+                taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(taskId)
+                        .withVariables(variables)
+                        .build());
+            } else {
+                taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(taskId)
+                        .build());
+            }
+
+            //写入数据库
+            int result = formDataService.getBaseMapper().insertFormData(listMap);
+
+            return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.SUCCESS.getCode(),
+                    GlobalConfig.ResponseCode.SUCCESS.getDesc(), listMap);
+        } catch (Exception e) {
+            return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.ERROR.getCode(),
+                    "失败", e.toString());
+        }
+    }
+
+    @PostMapping(value = "newFormDataSave")
+    public AjaxResponse newFormDataSave(@RequestParam("taskId") String taskId) {
+        try {
+            if (GlobalConfig.Test) {
+                securityUtil.logInAs("yuangong");
+            }
+
+            Task task = taskRuntime.task(taskId);
+            UserTask userTask = (UserTask) repositoryService.getBpmnModel(
+                    task.getProcessDefinitionId()).getFlowElement(task.getTaskDefinitionKey()
+            );
+
+            HashMap<String, Object> variables = new HashMap<String, Object>();
+
+            List<FormData> formDataList = userTask
+                    .getFormProperties()
+                    .stream()
+                    .map(fp -> {
+                        if (StringUtils.isNoneBlank()) {
+                            //变量具体是要作为参数完成任务并往下传递，但是目前FormProperty这个对象中各个属性和含义我还没太搞清楚，
+                            //留待日后BPMNJS弄好了再回来看
+                            variables.put(fp.getId(), fp.getVariable());
+                        }
+                        FormData formData = new FormData();
+                        formData.setProc_def_id_(task.getProcessDefinitionId());
+                        formData.setProc_inst_id_(task.getProcessInstanceId());
+                        formData.setForm_key_(task.getFormKey());
+                        formData.setControl_id_(fp.getId());
+                        formData.setControl_value_(JSONObject.toJSONString(fp.getFormValues()));
+                        return formData;
+                    }).collect(Collectors.toList());
+
+            if (CollectionUtils.isNotEmpty(variables)) {
+                //带参数完成任务
+                taskRuntime.complete(
+                        TaskPayloadBuilder.complete()
+                                .withTaskId(taskId)
+                                .withVariables(variables)
+                                .build()
+                );
+            } else {
+                taskRuntime.complete(
+                        TaskPayloadBuilder.complete().withTaskId(taskId).build()
+                );
+            }
+
+            //写入数据库
+            boolean result = formDataService.saveBatch(formDataList);
+
+            return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.SUCCESS.getCode(),
+                    GlobalConfig.ResponseCode.SUCCESS.getDesc(), result);
+        } catch (Exception e) {
+            return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.ERROR.getCode(),
+                    "失败", e.toString());
+        }
+    }
+
+
 }

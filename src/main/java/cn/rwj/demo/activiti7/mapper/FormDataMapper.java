@@ -1,5 +1,7 @@
 package cn.rwj.demo.activiti7.mapper;
 
+import cn.rwj.demo.activiti7.model.FormData;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.*;
 
 import java.util.HashMap;
@@ -11,7 +13,7 @@ import java.util.List;
  * @Description
  */
 @Mapper
-public interface FormDataMapper {
+public interface FormDataMapper extends BaseMapper<FormData> {
 
     @Select("SELECT Control_ID_,Control_VALUE_ from formdata where PROC_INST_ID_ = #{PROC_INST_ID}")
     List<HashMap<String,Object>> selectFormDataByProcessInstanceId(@Param("PROC_INST_ID") String PROC_INST_ID);
