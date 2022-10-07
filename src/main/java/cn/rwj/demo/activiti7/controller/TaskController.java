@@ -11,10 +11,15 @@ import org.activiti.api.runtime.shared.query.Pageable;
 import org.activiti.api.task.model.Task;
 import org.activiti.api.task.model.builders.TaskPayloadBuilder;
 import org.activiti.api.task.runtime.TaskRuntime;
+import org.activiti.bpmn.model.FormProperty;
+import org.activiti.bpmn.model.FormValue;
+import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.RepositoryService;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,12 +34,14 @@ import java.util.List;
 public class TaskController {
     @Resource
     private TaskRuntime taskRuntime;
-
     @Resource
     private SecurityUtil securityUtil;
-
     @Resource
     private ProcessRuntime processRuntime;
+    @Resource
+    private FormDataMapper formDataMapper;
+    @Resource
+    private RepositoryService repositoryService;
 
     //获取我的代办任务
     @GetMapping(value = "getTasks")
@@ -98,4 +105,30 @@ public class TaskController {
         }
     }
 
+    /**
+     * 经测试， Activity 7.4.0 可以取到表单的所有属性和值
+     * @param taskId
+     */
+    @GetMapping(value = "/testGetForm")
+    public void formDataShow(@RequestParam("taskId") String taskId) {
+        if (GlobalConfig.Test) {
+            securityUtil.logInAs("yuangong");
+        }
+        Task task = taskRuntime.task(taskId);
+        UserTask userTask = (UserTask) repositoryService.getBpmnModel(task.getProcessDefinitionId())
+                .getFlowElement(task.getFormKey());
+        List<FormProperty> formProperties = userTask.getFormProperties();
+        formProperties.forEach(i -> {
+            System.out.println("Form property ID:  "  + i.getId());
+            System.out.println("Property name:  "  + i.getName());
+            System.out.println("type:  "  + i.getType());
+            System.out.println("variable:  "  + i.getVariable());
+            System.out.println("Default value:  "  + i.getDefaultExpression());
+            System.out.println("Expression:  "  + i.getExpression());
+            List<FormValue> formValues = i.getFormValues();
+            formValues.forEach(f -> {
+                System.out.println("Form property value -> Value ID: " + f.getId());
+            });
+        });
+    }
 }
