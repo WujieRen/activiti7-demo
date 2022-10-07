@@ -30,7 +30,12 @@ public class Part9TaskRuntime {
     @Test
     public void getTasks() {
         securityUtil.logInAs("yuangong");
-
+        /**
+         * 该方法会查出来 Asignee=yuangong 和 candidate包含yuangong 的所有任务
+         *  如果只是 candidate包含yuangong 的话
+         *      1. Asignee=null，说明该任务带拾取
+         *      2. Asignee已经有值
+         */
         Page<Task> tasks = taskRuntime.tasks(Pageable.of(0,100));
         List<Task> list=tasks.getContent();
         for(Task tk : list){
@@ -45,7 +50,6 @@ public class Part9TaskRuntime {
             }else{
                 System.out.println("Assignee："+ tk.getAssignee());
             }
-
         }
     }
 

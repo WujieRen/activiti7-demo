@@ -14,7 +14,7 @@ import java.util.List;
 public interface FormDataMapper {
 
     @Select("SELECT Control_ID_,Control_VALUE_ from formdata where PROC_INST_ID_ = #{PROC_INST_ID}")
-    List<HashMap<String,Object>> selectFormData(@Param("PROC_INST_ID") String PROC_INST_ID);
+    List<HashMap<String,Object>> selectFormDataByProcessInstanceId(@Param("PROC_INST_ID") String PROC_INST_ID);
 
 
     //写入表单
